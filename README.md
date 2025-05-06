@@ -44,3 +44,18 @@ Improvements:
 I also would like to :
     - Run data validation checks in step 3. And also automatically trigger a Glue Crawler for schema update ;
     - And save metadata in s3://iata-pipeline-data/metadata/ as demanded.
+
+
+**Repo Explanation**
+
+-> cloudformation :
+    Contains Infrastructure as Code (IaC) templates to deploy all required AWS resources.
+
+-> lambdas:
+    Contains the Lambda function source code:
+        - fetch_handler.py – handles Step 1: fetching and uncompressing the file
+        - process_handler.py – handles Step 2: converting to Parquet, partitioning, and archiving
+        - metadata_handler.py – placeholder for optional metadata management (currently empty)
+
+-> assets:
+    Contains utility files such as images, architecture diagrams, and other documentation assets.
