@@ -4,7 +4,7 @@ import os
 import tempfile
 import urllib3
 
-def lambda_handler(event, context):
+def lambda_handler(event, context) -> dict:
     url = "https://eforexcel.com/wp/wp-content/uploads/2020/09/2m-Sales-Records.zip"
     bucket = "iata-pipeline-data"
     key = "raw/2m_sales.csv"
