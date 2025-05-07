@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation for IATA data pipeline case study
+Description: CloudFormation for IATA data pipeline case study - s3
 
 Resources:
   RawBucket:
