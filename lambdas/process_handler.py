@@ -39,9 +39,6 @@ class ToParquet:
         s3.delete_object(Bucket=self.bucket, Key=self.input_key)
 
 
-## still have to add some validation tests and trigger glue crawler (improvements)
-
-
 def lambda_handler(event, context):
     tp = ToParquet()
 
