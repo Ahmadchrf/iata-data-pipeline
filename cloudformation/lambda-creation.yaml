@@ -3,45 +3,94 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation for IATA data pipeline case study - Lambda
 
 Resources:
-  LambdaRole:
-    Type: 'AWS::IAM::Role'
+
+  IAMPolicy:
+    Type: 'AWS::IAM::Policy'
     Properties:
-      AssumeRolePolicyDocument:
+      PolicyName: s3-for-iata-data-pipeline-policy
+      PolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:DeleteObject'
+            Resource: 'arn:aws:s3:::iata-data-pipeline'
+
+  IAMRoleS3:
+    Type: 'AWS::IAM::Role'
+    Properties:
       Path: /
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action: 's3:*'
-                Resource: '*'
+      ManagedPolicyArns:
+        - arn:aws:iam::1234567890:policy/s3-for-iata-data-pipeline-policy #here it's just easier, to get full access, but it would be better specify specifi policies and only our bucket
+      MaxSessionDuration: 3600
+      RoleName: !GetAtt IAMPolicy
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
 
 
   fetch_handler_lambda:
     Type: AWS::Lambda::Function
     Properties:
-      Role: !GetAtt LambdaRole.Arn
+      Role: !GetAtt IAMRoleS3.Arn
+      MemorySize: 128
+      Timeout: 300
+      Architectures: 
+      - x86_64
+      FunctionName: fetch_handler
       Runtime: python3.9
-      Handler: lambda.lambda_handler
+      Handler: lambda_function.lambda_handler
       Code:
         S3Bucket : iata-pipeline-lambda-code
         S3Key : fetch_handler.zip # Suppose I manually upload the .zip file to the dedicated S3 bucket — I could also automate this step using a shell script in the git repo, for example."
 
+  LambdaEventProcess:
+    UpdateReplacePolicy: "Retain"
+    Type: "AWS::Lambda::Permission"
+    DeletionPolicy: "Retain"
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+        - "process_handler_lambda"
+        - "Arn"
+      Action: "lambda:InvokeFunction"
+      SourceArn: "arn:aws:s3:::iata-pipeline-data"
+      Principal: "s3.amazonaws.com"
+      Events:
+        BucketEvent1:
+          Type: S3
+          # Properties:
+          #   Bucket:
+          #     Ref: iata-pipeline-data
+            Events:
+              - s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: raw/original
+                  - Name: suffix
+                    Value: .csv
+
+
   process_handler_lambda:
     Type: AWS::Lambda::Function
     Properties:
-      Role: !GetAtt LambdaRole
+      Role: !GetAtt IAMRoleS3
+      MemorySize: 128
+      Timeout: 300
+      Architectures: 
+      - x86_64
+      EphemeralStorage:
+        Size: 512
+      FunctionName: process_handler
       Runtime: python3.9
-      Handler: lambda.lambda_handler
+      Handler: lambda_function.lambda_handler
       Code:
         S3Bucket : iata-pipeline-lambda-code
         S3Key : process_handler.zip # Suppose I manually upload the .zip file to the dedicated S3 bucket. I can also automate this step using a shell script in the git repo, for example."
