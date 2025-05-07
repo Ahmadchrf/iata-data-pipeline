@@ -1,0 +1,49 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation for IATA data pipeline case study - Lambda
+
+Resources:
+  LambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource: '*'
+
+
+  fetch_handler_lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: python3.9
+      Handler: lambda.lambda_handler
+      Code:
+        S3Bucket : iata-pipeline-lambda-code
+        S3Key : fetch_handler.zip # Suppose I manually upload the .zip file to the dedicated S3 bucket — I could also automate this step using a shell script in the git repo, for example."
+
+  process_handler_lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt LambdaRole
+      Runtime: python3.9
+      Handler: lambda.lambda_handler
+      Code:
+        S3Bucket : iata-pipeline-lambda-code
+        S3Key : process_handler.zip # Suppose I manually upload the .zip file to the dedicated S3 bucket. I can also automate this step using a shell script in the git repo, for example."
+    
+  
