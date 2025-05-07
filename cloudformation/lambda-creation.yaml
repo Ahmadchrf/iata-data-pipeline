@@ -23,6 +23,7 @@ Resources:
     Properties:
       Path: /
       ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::1234567890:policy/s3-for-iata-data-pipeline-policy # Here I granted access to the entire bucket, but we could have segmented access by folder and created two separate iam roles for the two lambda functions. In this case both lambdas share the same role.
       MaxSessionDuration: 3600
       RoleName: !GetAtt IAMPolicy
