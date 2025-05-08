@@ -40,14 +40,14 @@ Below is the breakdown of the logic and components of this above diagram:
     * A crawler is automatically run when new data is processed and saved in s3://iata-pipeline-data/processed/
     * The json schema is stored in s3://iata-pipeline-data/metadata/
 
-    -> The structured data can now be queried with SQL using Amazon Athena.
+    - The structured data can now be queried with SQL using Amazon Athena.
 
 Improvements:
 
 I also would like to :
-    * Run data validation checks in step 3 and log them in a dedicated CloudWatch log group for the entire project.
-    * If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For now on it's overkilled.
-    * Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
+* Run data validation checks in step 3 and log them in a dedicated CloudWatch log group for the entire project.
+* If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For now on it's overkilled.
+* Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
 
 
 **Repo Explanation**
@@ -57,9 +57,14 @@ I also would like to :
 
 - lambdas:
     Contains the Lambda function source code:
-        * fetch_handler.py – handles Step 1: fetching and uncompressing the file.
-        * process_handler.py – handles Step 2: converting to Parquet, partitioning, and archiving.
-        * metadata_handler.py – handles Step 4: Running Crawler with s3 trigger and saving only schema.
+    * fetch_handler.py – handles Step 1: fetching and uncompressing the file.
+    * process_handler.py – handles Step 2: converting to Parquet, partitioning, and archiving.
+    * metadata_handler.py – handles Step 4: Running Crawler with s3 trigger and saving only schema.
 
 - assets:
     Contains utility files such as images, architecture diagrams, and other documentation assets.
+
+
+The final s3 structure :
+
+![s3 structure](assets/s3_structure.png) 
