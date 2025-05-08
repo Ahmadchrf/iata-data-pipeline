@@ -49,6 +49,7 @@ I also would like to :
 * If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For the moment it's overkilled.
 * Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
 * We can also rename our columns to comply with snake_case naming convention.
+* having a better Lambda functions refinement by adding more robust error handling, like using try/except blocks and raising explicit exceptions.
 
 
 **Repo Explanation**
