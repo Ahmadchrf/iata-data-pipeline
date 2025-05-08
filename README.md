@@ -45,8 +45,8 @@ Below is the breakdown of the logic and components of this above diagram:
 Improvements:
 
 I also would like to :
-* Run data validation checks in step 3 and log them in a dedicated CloudWatch log group for the entire project.
-* If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For now on it's overkilled.
+* Run data validation checks in step 2 and log them in a dedicated CloudWatch log group for the entire project.
+* If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For the moment it's overkilled.
 * Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
 
 
