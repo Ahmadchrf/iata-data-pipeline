@@ -65,6 +65,4 @@ I also would like to :
     Contains utility files such as images, architecture diagrams, and other documentation assets.
 
 
-The final s3 structure :
-
-![s3 structure](assets/s3_structure.png) 
+The final s3 structure : [s3 structure](assets/s3_structure.png) 
