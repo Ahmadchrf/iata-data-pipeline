@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation for IATA data pipeline case study - Metadata lambda
+Resources:
+
+  IAMRoleS3Crawler:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: lambda-role-crawler
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action: sts:AssumeRole
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+      - PolicyName: s3-for-iata-data-pipeline-policy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: Allow
+            Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+            - 's3:DeleteObject'
+            Resource: 'arn:aws:s3:::iata-pipeline-data/*'
+
+  metadata_handler_lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt IAMRoleS3Crawler.Arn
+      MemorySize: 512
+      Timeout: 300
+      Architectures:
+      - x86_64
+      FunctionName: metadata_handler
+      Runtime: python3.11
+      Handler: lambda_function.lambda_handler
+      Code:
+        S3Bucket: iata-pipeline-lambda-code
+        S3Key: metadata_handler.zip
+        # Suppose I manually upload the .zip file to the dedicated S3 bucket — I could also automate this step using a shell script in the git repo, for example."
+
+  IataDataBucket:
+    Type: AWS::S3::BucketNotification
+    Properties:
+      Bucket: 'iata-pipeline-data'
+      NotificationConfiguration:
+        LambdaConfigurations:
+        - Event: s3:ObjectCreated:*
+          Filter:
+            S3Key:
+              Rules:
+              - Name: prefix
+                Value: processed/
+              - Name: suffix
+                Value: .csv
+          Function: !GetAtt metadata_handler_lambda.Arn
+
+  LambdaInvokePermissionFromS3:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt metadata_handler_lambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceArn: iata-pipeline-data
