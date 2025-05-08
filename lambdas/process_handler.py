@@ -24,11 +24,12 @@ class ToParquet:
         
         obj = s3.get_object(Bucket=self.bucket, Key=self.input_key)
         csv_content = obj['Body'].read().decode('utf-8')
-        self.df = pd.read_csv(io.StringIO(csv_content))
+        df = pd.read_csv(io.StringIO(csv_content))
+        df['order date']=pd.to_datetime(df['order date'],errors='coerce')
 
     def save_data_parquet_partitioned(self):
-        for country in self.df['Country'].unique():
-            df_country = self.df[self.df['Country'] == country]
+        for country in df['Country'].unique():
+            df_country = df[df['Country'] == country]
             table = pa.Table.from_pandas(df_country)
 
             buf = io.BytesIO()
@@ -45,7 +46,6 @@ class ToParquet:
             key=self.archive_key
         )
         s3.delete_object(Bucket=self.bucket, Key=self.input_key)
-
 
 def lambda_handler(event, context):
     tp = ToParquet()
