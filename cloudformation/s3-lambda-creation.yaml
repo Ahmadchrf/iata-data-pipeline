@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation for IATA data pipeline case study - Lambda x s3
 Resources:
-
   # The second lambda is triggered once a new csv file is added in iata-pipeline-data/raw/original
   IataDataBucket:
     Type: AWS::S3::Bucket
@@ -55,12 +54,15 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Role: !GetAtt IAMRoleS3.Arn
-      MemorySize: 128
+      MemorySize: 512
       Timeout: 300
       Architectures:
       - x86_64
+      EphemeralStorage:
+        Size: 1024
+      # I have temporary storage disk needs here with the temporary file
       FunctionName: fetch_handler
-      Runtime: python3.1
+      Runtime: python3.11
       Handler: lambda_function.lambda_handler
       Code:
         S3Bucket: iata-pipeline-lambda-code
@@ -78,7 +80,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Role: !GetAtt IAMRoleS3.Arn
-      MemorySize: 128
+      MemorySize: 512
       Timeout: 300
       Architectures:
       - x86_64
