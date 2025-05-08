@@ -15,7 +15,7 @@ The solution should consist of a set of AWS Lambda functions that:
 
 The overall logic and architecture decided for this case will be as follows :
 
-![Data architecture diagram](assets/data_architecture.png)
+![Data architecture diagram](assets/data_architecture.png) 
 
 Below is the breakdown of the logic and components of this above diagram:
 
