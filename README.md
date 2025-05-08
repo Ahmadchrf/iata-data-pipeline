@@ -13,7 +13,7 @@ The solution should consist of a set of AWS Lambda functions that:
 - The final Parquet data must be queryable through Athena ;
 - The entire solution should be deployable using an IaC (here CloudFormation as demanded).
 
-The overall logic and architecture decided for this case will be as follows :
+The overall logic and architecture decided for this case will be as follows - MVP:
 
 ![Data architecture diagram](assets/data_architecture.png) 
 
@@ -42,7 +42,7 @@ Below is the breakdown of the logic and components of this above diagram:
 
     - The structured data can now be queried with SQL using Amazon Athena.
 
-Improvements:
+Improvements - for a second version:
 
 I also would like to :
 * Run data validation checks in step 2 and log them in a dedicated CloudWatch log group for the entire project.
@@ -66,4 +66,4 @@ I also would like to :
     Contains utility files such as images, architecture diagrams, and other documentation assets.
 
 
-The final s3 structure : [s3 structure](assets/s3_structure.png) 
+The final s3 structure : [s3 structure](assets/s3_structure.png)
