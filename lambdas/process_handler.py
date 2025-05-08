@@ -9,11 +9,19 @@ s3 = boto3.client('s3')
 class ToParquet:
 
     bucket = 'iata-pipeline-data'
-    input_key = 'raw/original/2m_sales.csv'
-    archive_key = 'raw/archive/2m_sales_archived.csv'
+    input_key = 'raw/original/'
+    archive_key = 'raw/archive/'
     clean_key = 'processd/'
 
     def __init__(self):
+        
+        response = s3.list_objects_v2(Bucket=self.bucket, Prefix=self.input_key)
+        csv_files = [obj for obj in response['Contents'] if '.csv' in obj['Key']]        
+        
+        latest_file = sorted(csv_files, key=lambda x: x['LastModified'], reverse=True)[0]
+        self.input_key = latest_file['Key']
+        self.archive_key = self.input_key.replace('raw/original/', 'raw/archive/')
+        
         obj = s3.get_object(Bucket=self.bucket, Key=self.input_key)
         csv_content = obj['Body'].read().decode('utf-8')
         self.df = pd.read_csv(io.StringIO(csv_content))
@@ -27,7 +35,7 @@ class ToParquet:
             pq.write_table(table, buf)
             buf.seek(0)
 
-            filename = f"{self.clean_key}country={country}/2m_sales.parquet"
+            filename = f"{self.clean_key}country={country}/data_2msales.parquet"
             s3.upload_fileobj(buf, self.bucket, filename)
 
     def archive_original_csv(self):
