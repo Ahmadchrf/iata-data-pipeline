@@ -9,7 +9,7 @@ Resources:
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
       - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
-      - arn:aws:iam::aws:policy/AmazonAthenaFullAccess #I used managed policies, but i could have break them down
+      - arn:aws:iam::aws:policy/AmazonAthenaFullAccess #I used managed policies, but i could have broken them down
       RoleName: iata-glue-crawler-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
