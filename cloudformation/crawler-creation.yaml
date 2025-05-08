@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation for IATA data pipeline case study - Crawler and Athena
+
+Resources:
+  CrawlerRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Path: /
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+      - arn:aws:iam::aws:policy/AmazonAthenaFullAccess
+      MaxSessionDuration: 3600
+      RoleName: iata-glue-crawler-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: glue.amazonaws.com
+
+  IataCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: IataCrawler-data
+      Role: CrawlerRole
+      Description: AWS Glue crawler to crawl parquet file
+      DatabaseName: iata_datadb
+      Targets:
+        S3Targets:
+        - Path: "s3://iata-pipeline-data/processed/"
+      TablePrefix: IataDataTable
+      SchemaChangePolicy:
+        UpdateBehavior: "UPDATE_IN_DATABASE"
+        DeleteBehavior: "LOG"
+
+  IataAthenaDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      DatabaseInput:
+        Name: iata_datadb
+
+  AthenaQuerys3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: iata-athena_results
