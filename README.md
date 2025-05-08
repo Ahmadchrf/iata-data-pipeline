@@ -20,42 +20,46 @@ The overall logic and architecture decided for this case will be as follows :
 Below is the breakdown of the logic and components of this above diagram:
 
 1. Data Ingestion (Fetch + Uncompress)
-
-    - A first Lambda function fetches a ZIP file from an HTTPS endpoint.
-    - It uncompresses the ZIP and extracts the CSV.
-    - The extracted CSV is stored in s3://iata-pipeline-data/raw/original/
+    * A first Lambda function fetches a ZIP file from an HTTPS endpoint.
+    * It uncompresses the ZIP and extracts the CSV.
+    * The extracted CSV is stored in s3://iata-pipeline-data/raw/original/
 
 2. Data Transformation (Convert + Partition + Archived)
-A second Lambda function is automatically triggered when the CSV lands in the raw folder. It performs the following actions:
-    - Converts the CSV into Parquet format.
-    - Partitions the data based on the Country column.
-    - Stores the output in s3://iata-pipeline-data/processed/
-    - The original CSV file is moved to an archive folder: s3://iata-pipeline-data/raw/archive/.
+    * A second Lambda function is automatically triggered when the CSV lands in s3://iata-pipeline-data/raw/original
+    * Converts the CSV into Parquet format.
+    * Partitions the data based on the Country column.
+    * Stores the output in s3://iata-pipeline-data/processed/
+    * The original CSV file is moved to an archive folder: s3://iata-pipeline-data/raw/archive/.
 
 3. Schema Registration & Athena querying
-    - A Glue Crawler scans the processed folder and extracts the data schema.
-    - The schema is saved in the AWS Glue Data Catalog.
-    - A Glue Database is created from this schema.
+    * A Glue Crawler scans the processed folder and extracts the data schema.
+    * The schema is saved in the AWS Glue Data Catalog.
+    * A Glue Database is created from this schema.
+
+4. Metadata Update
+    * A crawler is automatically run when new data is processed and saved in s3://iata-pipeline-data/processed/
+    * The json schema is stored in s3://iata-pipeline-data/metadata/
 
     -> The structured data can now be queried with SQL using Amazon Athena.
 
 Improvements:
 
 I also would like to :
-    - Run data validation checks in step 3. And also automatically trigger a Glue Crawler for schema update ;
-    - And save metadata in s3://iata-pipeline-data/metadata/ as demanded.
+    * Run data validation checks in step 3 and log them in a dedicated CloudWatch log group for the entire project.
+    * If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For now on it's overkilled.
+    * Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
 
 
 **Repo Explanation**
 
--> cloudformation :
+- cloudformation :
     Contains Infrastructure as Code (IaC) templates to deploy all required AWS resources.
 
--> lambdas:
+- lambdas:
     Contains the Lambda function source code:
-        - fetch_handler.py – handles Step 1: fetching and uncompressing the file
-        - process_handler.py – handles Step 2: converting to Parquet, partitioning, and archiving
-        - metadata_handler.py – placeholder for optional metadata management (currently empty)
+        * fetch_handler.py – handles Step 1: fetching and uncompressing the file.
+        * process_handler.py – handles Step 2: converting to Parquet, partitioning, and archiving.
+        * metadata_handler.py – handles Step 4: Running Crawler with s3 trigger and saving only schema.
 
--> assets:
+- assets:
     Contains utility files such as images, architecture diagrams, and other documentation assets.
