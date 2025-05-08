@@ -35,7 +35,7 @@ class ToParquet:
             pq.write_table(table, buf)
             buf.seek(0)
 
-            filename = f"{self.clean_key}country={country}/data_2msales.parquet"
+            filename = f"{self.clean_key}country={country}/data_2msales_{country}.parquet"
             s3.upload_fileobj(buf, self.bucket, filename)
 
     def archive_original_csv(self):
