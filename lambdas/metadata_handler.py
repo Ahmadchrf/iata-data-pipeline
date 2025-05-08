@@ -20,6 +20,13 @@ def lambda_handler(event,context):
     # crawler run
     response = glue.start_crawler(Name='IataCrawler-data')
     
+    # To save metadata only when the crawler finishes
+    while True:
+        crawler = glue.get_crawler(Name='IataCrawler-data')
+        if crawler['Crawler']['State']=='READY'
+            break
+        
+    
     #Save schema in s3
     paginator = glue.get_paginator('get_tables')
     pages = paginator.paginate(DatabaseName='iata_datadb')
