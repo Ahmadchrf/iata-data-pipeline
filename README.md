@@ -11,7 +11,7 @@ The solution should consist of a set of AWS Lambda functions that:
 - Partition the Parquet data by the Country field and store it in S3 ;
 - The original CSV file should be archived under a different prefix within the same S3 bucket ;
 - The final Parquet data must be queryable through Athena ;
-- The entire solution should be deployable using an IaC (here CloudFormation).
+- The entire solution should be deployable using an IaC (here CloudFormation as demanded).
 
 The overall logic and architecture decided for this case will be as follows :
 
@@ -48,6 +48,7 @@ I also would like to :
 * Run data validation checks in step 2 and log them in a dedicated CloudWatch log group for the entire project.
 * If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For the moment it's overkilled.
 * Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
+* We can also rename our columns to comply with snake_case naming convention.
 
 
 **Repo Explanation**
