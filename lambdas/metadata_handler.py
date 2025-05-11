@@ -17,17 +17,12 @@ def upload_to_s3(data, bucket, path):
 def lambda_handler(event,context):
     
     glue=boto3.client('glue')
-    # crawler run
-    response = glue.start_crawler(Name='IataCrawler-data')
     
-    # To save metadata only when the crawler finishes
     while True:
         crawler = glue.get_crawler(Name='IataCrawler-data')
-        if crawler['Crawler']['State']=='READY'
+        if crawler['Crawler']['State']=='READY':
             break
         
-    
-    #Save schema in s3
     paginator = glue.get_paginator('get_tables')
     pages = paginator.paginate(DatabaseName='iata_datadb')
     current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
