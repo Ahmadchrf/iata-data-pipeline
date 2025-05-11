@@ -43,4 +43,4 @@ Resources:
   AthenaQuerys3:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: iata-athena_results
+      BucketName: iata-athena-results
