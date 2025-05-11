@@ -24,13 +24,14 @@ class ToParquet:
         
         obj = s3.get_object(Bucket=self.bucket, Key=self.input_key)
         csv_content = obj['Body'].read().decode('utf-8')
-        df = pd.read_csv(io.StringIO(csv_content))
-        df['order date']=pd.to_datetime(df['order date'],errors='coerce')
+        self.df = pd.read_csv(io.StringIO(csv_content))
+        self.df['order date']=pd.to_datetime(self.df['order date'],errors='coerce')
+        self.df['ship date']=pd.to_datetime(self.df['ship date'],errors='coerce')
 
     def save_data_parquet_partitioned(self):
-        for country in df['Country'].unique():
-            df_country = df[df['Country'] == country]
-            table = pa.Table.from_pandas(df_country)
+        for country in self.df['Country'].unique():
+            self.df_country = self.df[self.df['Country'] == country]
+            table = pa.Table.from_pandas(self.df_country)
 
             buf = io.BytesIO()
             pq.write_table(table, buf)
