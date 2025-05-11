@@ -34,4 +34,4 @@ Below is the documentation of the project : https://app.eraser.io/workspace/ok6M
     Contains utility files such as images, architecture diagrams, and other documentation assets.
 
 
-The final s3 structure : [s3 structure](assets/s3_structure.png)
+The final s3 structure : [s3 structure](assets/aws_s3_structure.png)
