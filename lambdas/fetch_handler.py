@@ -22,7 +22,7 @@ def lambda_handler(event, context) -> dict:
             zip_ref.extractall(tmpdir)
 
         for file in os.listdir(tmpdir):
-            if file.endswith(".csv"):
+            if file == "2m Sales Records.csv":
                 csv_path = os.path.join(tmpdir, file)
                 break
 
