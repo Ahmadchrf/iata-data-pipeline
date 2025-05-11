@@ -17,40 +17,7 @@ The overall logic and architecture decided for this case will be as follows - MV
 
 ![Data architecture diagram](assets/data_architecture.png) 
 
-Below is the breakdown of the logic and components of this above diagram:
-
-1. Data Ingestion (Fetch + Uncompress)
-    * A first Lambda function fetches a ZIP file from an HTTPS endpoint.
-    * It uncompresses the ZIP and extracts the CSV.
-    * The extracted CSV is stored in **s3://iata-pipeline-data/raw/original/**
-
-2. Data Transformation (Convert + Partition + Archived)
-    * A second Lambda function is automatically triggered when the CSV lands in **s3://iata-pipeline-data/raw/original**
-    * Converts the CSV into Parquet format.
-    * Partitions the data based on the Country column.
-    * Stores the output in **s3://iata-pipeline-data/processed**
-    * The original CSV file is moved to an archive folder: **s3://iata-pipeline-data/raw/archive**
-
-3. Schema Registration & Athena querying
-    * A Glue Crawler scans the processed folder and extracts the data schema.
-    * The schema is saved in the AWS Glue Data Catalog.
-    * A Glue Database is created from this schema.
-
-4. Metadata Update
-    * A crawler is automatically run when new data is processed and saved in **s3://iata-pipeline-data/processed**
-    * The json schema is stored in **s3://iata-pipeline-data/metadata**
-
-    - The structured data can now be queried with SQL using Amazon Athena.
-
-Improvements - for a second version:
-
-I also would like to :
-* Run data validation checks in step 2 and log them in a dedicated CloudWatch log group for the entire project.
-* If the project evolves and data ingestion becomes more frequent, we could consider introducing an Iceberg layer. For the moment it's overkilled.
-* Align with IATA naming conventions for S3 buckets, including account ID, region, or any specific internal rules.
-* We can also rename our columns to comply with snake_case naming convention.
-* Having a better Lambda functions refinement by adding more robust error handling, like using try/except blocks and raising explicit exceptions.
-
+Below is the documentation of the project : https://app.eraser.io/workspace/ok6MHw4bd8vew4ZQe5Oy?origin=share
 
 **Repo Explanation**
 
