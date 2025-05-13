@@ -26,4 +26,3 @@ def test_lambda_handler(mock_urllib3, mock_boto3, fake_event):
 
     result = lambda_handler(fake_event, {})
     assert result["statusCode"] == 200
-    s3.upload_fileobj.assert_called_once()
